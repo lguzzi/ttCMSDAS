@@ -149,7 +149,25 @@ class ttdilepton(analysis):
     leps = self.selLeptons
     pts  = [lep.Pt() for lep in leps]
     self.selLeptons = [lep for _,lep in sorted(zip(pts,leps))]
+    
+    ###Jets
+    ###########################################
+    ntightJet=0
+    nBJet=0
+    MC=1
+    for i in range(t.nJet):
+      p = TLorentzVector()
+      p.SetPtEtaPhiM(t.Jet_pt[i], t.Jet_eta[i], t.Jet_phi[i], t.Jet_mass[i])
+      if(self.isData==1):
+        MC=-1
+      else:
+        MC=1
+      if t.Jet_jetId[i] < 2: continue #continue if it is not tight 
+      self.selJets.append(jet(p, t.Jet_btagCSVV2[i],MC,i,t.Jet_btagDeepB[i]))
 
+    ###P Met
+    self.pmet.SetPtEtaPhiM(t.MET_pt, 0, t.MET_phi, 0)
+    
     ### Calculate the weights
     self.SFelec = 1; self.SFmuon = 1; self.SFelecErr = 0; self. SFmuonErr = 0
     self.weightSFmuonUp = 1 
@@ -200,6 +218,53 @@ class ttdilepton(analysis):
     if l0.charge*l1.charge > 0: return 
     if l0.Pt() < 20:            return 
     if InvMass(l0,l1) < 20:     return  
+    
+    if len(self.selJets) < 2: return
+    ##if t.nJet < 2             :   return
+    ##if t.jet_jetId & 011 == 1 :   return     
+
+    Z_MASS_PDG = 91.1876
+    inv_mass = InvMass(l0, l1)
+
+    ## HLT selection
+    ##      simple HLT selection for doubleLep samples
+    if    l0.IsMuon() and l1.IsMuon():
+        ## DY offline cut
+        if abs(inv_mass - Z_MASS_PDG) < 15:
+            return
+        if self.pmet.Pt() < 35:
+            return
+
+        ## online cut
+        if not t.HLT_HIL3DoubleMu0: 
+            return
+    
+    elif  l0.IsElec() and l1.IsElec():
+        ## DY offline cut
+        if abs(inv_mass - Z_MASS_PDG) < 15:
+             return
+        if self.pmet.Pt() < 35:
+             return
+
+        ## online cut
+        if not t.HLT_HIEle20_Ele12_CaloIdL_TrackIdL_IsoVL_DZ: 
+            return     
+    
+    ##      depends on the sample for emu samples
+    elif (l0.IsMuon() and l1.IsElec()) or \
+         (l0.IsElec() and l1.IsMuon()) :
+
+        ## online only
+        if self.sampleName == 'HighEGJet':
+            if not (t.HLT_HIEle20_WPLoose_Gsf and not t.HLT_HIL3Mu20):
+                return
+        if self.sampleName == 'SingleMuon':
+            if not (t.HLT_HIL3Mu20):
+                return
+    
+    else:
+        print 'ERROR: 0 muons and 0 electrons were found'
+        import pdb; pdb.set_trace()
 
     ### Fill the histograms
     self.FillHistograms(self.selLeptons, self.selJets, self.pmet)
