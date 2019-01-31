@@ -29,6 +29,10 @@ class ttdilepton(analysis):
     self.CreateTH1F("InvMass",  "", 60, 0, 300)
     self.CreateTH1F("DilepPt",  "", 40, 0, 200)
     self.CreateTH1F("DeltaPhi", "", 20, 0, 1)
+    
+    self.CreateTH1F("SFmuon", "", 3,0,3)
+    
+    self.CreateTH1F("SFelec", "", 3, 0, 3)
 
   def resetObjects(self):
     ''' Reset the list where the objects are stored '''
@@ -39,7 +43,16 @@ class ttdilepton(analysis):
   def FillHistograms(self, leptons, jets, pmet):
     ''' Fill all the histograms. Take the inputs from lepton list, jet list, pmet '''
     if not len(leptons) >= 2: return # Just in case
+    # nominal
     self.weight = self.EventWeight * self.SFmuon * self.SFelec * self.PUSF
+    
+    # muon Up and Down
+    self.weightSFmuonUp = self.EventWeight * (self.SFmuon + self.SFmuonErr) * self.SFelec * self.PUSF
+    self.weightSFmuonDown = self.EventWeight * (self.SFmuon - self.SFmuonErr) * self.SFelec * self.PUSF
+    
+    # electrons Up and Down
+    self.weightSFelecUp = self.EventWeight * self.SFmuon * (self.SFelec + self.SFelecErr) * self.PUSF
+    self.weightSFelecDown = self.EventWeight * self.SFmuon * (self.SFelec - self.SFelecErr) * self.PUSF
 
     # Re-calculate the observables
     lep0  = leptons[0]; lep1 = leptons[1]
@@ -57,6 +70,14 @@ class ttdilepton(analysis):
     self.obj["InvMass"].Fill(mll, self.weight)
     self.obj['DilepPt'].Fill(dipt, self.weight)
     self.obj['DeltaPhi'].Fill(dphi/3.141592, self.weight)
+    
+    self.obj['SFmuon'].Fill(0.5, self.weight)
+    self.obj['SFmuon'].Fill(1.5, self.weightSFmuonUp)
+    self.obj['SFmuon'].Fill(2.5, self.weightSFmuonDown)
+    
+    self.obj['SFelec'].Fill(0.5, self.weight)
+    self.obj['SFelec'].Fill(1.5, self.weightSFelecUp)
+    self.obj['SFelec'].Fill(2.5, self.weightSFelecDown)
 
   def insideLoop(self, t):
     self.resetObjects()
@@ -110,6 +131,10 @@ class ttdilepton(analysis):
 
     ### Calculate the weights
     self.SFelec = 1; self.SFmuon = 1; self.SFelecErr = 0; self. SFmuonErr = 0
+    self.weightSFmuonUp = 1 
+    self.weightSFmuonDown = 1 
+    self.weightSFelecUp = 1 
+    self.weightSFelecDown = 1
     if not self.isData:
       for lep in self.selLeptons:
         if lep.IsMuon():
