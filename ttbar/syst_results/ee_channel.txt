@@ -1,0 +1,29 @@
+[?1034hThis is for channel: ee
+N_signal = 57.1307 +- 0.4754
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+TTee_pdf 1.0291/1.0420 (2.91%/4.20%) (central = 0.64%)
+TTee_QCDscale 1.1002/0.0000 (10.02%/100.00%) (central = 55.01%)
+TTee_muonID 1.0000/1.0000 (0.00%/0.00%) (central = 0.00%)
+TTee_pileup 1.0001/0.9997 (0.01%/0.03%) (central = 0.02%)
+TTee_alpha 1.0167/1.0729 (1.67%/7.29%) (central = 2.81%)
+TTee_electronID 1.0570/0.9430 (5.70%/5.70%) (central = 5.70%)
+
+############################################################
+ NICE OUTPUT FOR THE GROUP D GUYS                           
+
+ CHANNEL: ee
+
+ Nominal Signal Yield = 57.1307 +- 0.4754
+
+ SYSTEMATCS UNCERTAINTY YIELD VARIATIONS:
+
+  * TTee_pdf 1.0291 1.0420
+  * TTee_QCDscale 1.1002 0.0000
+  * TTee_muonID 1.0000 1.0000
+  * TTee_pileup 1.0001 0.9997
+  * TT_lumi 1.035 0.965
+  * TTee_alpha 1.0167 1.0729
+  * TTee_electronID 1.0570 0.9430
+
+############################################################
+

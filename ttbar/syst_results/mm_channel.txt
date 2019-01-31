@@ -1,0 +1,29 @@
+[?1034hThis is for channel: mm
+N_signal = 77.8965 +- 0.5655
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+TTmm_pdf 1.0294/1.0420 (2.94%/4.20%) (central = 0.63%)
+TTmm_QCDscale 1.1008/0.0000 (10.08%/100.00%) (central = 55.04%)
+TTmm_muonID 1.0089/0.9911 (0.89%/0.89%) (central = 0.89%)
+TTmm_pileup 1.0003/0.9995 (0.03%/0.05%) (central = 0.04%)
+TTmm_alpha 1.0165/1.0732 (1.65%/7.32%) (central = 2.84%)
+TTmm_electronID 1.0001/0.9999 (0.01%/0.01%) (central = 0.01%)
+
+############################################################
+ NICE OUTPUT FOR THE GROUP D GUYS                           
+
+ CHANNEL: mm
+
+ Nominal Signal Yield = 77.8965 +- 0.5655
+
+ SYSTEMATCS UNCERTAINTY YIELD VARIATIONS:
+
+  * TTmm_pdf 1.0294 1.0420
+  * TTmm_QCDscale 1.1008 0.0000
+  * TTmm_muonID 1.0089 0.9911
+  * TTmm_pileup 1.0003 0.9995
+  * TT_lumi 1.035 0.965
+  * TTmm_alpha 1.0165 1.0732
+  * TTmm_electronID 1.0001 0.9999
+
+############################################################
+
