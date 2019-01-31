@@ -31,7 +31,11 @@ class ttdilepton(analysis):
     self.CreateTH1F("InvMass",  "", 60, 0, 300)
     self.CreateTH1F("DilepPt",  "", 40, 0, 200)
     self.CreateTH1F("DeltaPhi", "", 20, 0, 1)
-  
+ 
+    self.CreateTH1F('Ymm_yield', "", 1, 0, 1)
+    self.CreateTH1F('Yme_yield', "", 1, 0, 1)
+    self.CreateTH1F('Yee_yield', "", 1, 0, 1)
+    
     self.CreateTH1F("Yee_MatrixEl", "", 9, 0, 9) 
     self.CreateTH1F("Yee_SFmuon", "", 3, 0, 3)
     self.CreateTH1F("Yee_SFelec", "", 3, 0, 3)
@@ -109,6 +113,8 @@ class ttdilepton(analysis):
     self.obj['Y%s_SFPU' %flav ].Fill(0.5, self.weight        )
     self.obj['Y%s_SFPU' %flav ].Fill(1.5, self.weightSFPUUp  )
     self.obj['Y%s_SFPU' %flav ].Fill(2.5, self.weightSFPUDown)
+
+    self.obj['Y%s_yield' %flav].Fill(0.5, self.weight)
 
     for ii in range(9):
         if ii == 6 or ii == 2: continue     ## skip the unphysical values (2-0.5 and 0.5, 2)
