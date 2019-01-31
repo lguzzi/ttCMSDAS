@@ -183,7 +183,8 @@ class ttdilepton(analysis):
     MC=1
     for i in range(t.nJet):
       p = TLorentzVector()
-      p.SetPtEtaPhiM(t.Jet_pt[i], t.Jet_eta[i], t.Jet_phi[i], t.Jet_mass[i])
+      #p.SetPtEtaPhiM(t.Jet_pt[i], t.Jet_eta[i], t.Jet_phi[i], t.Jet_mass[i])
+      p.SetPtEtaPhiM(t.Jet_pt_jesTotalDown[i], t.Jet_eta[i], t.Jet_phi[i], t.Jet_mass_jesTotalDown[i])
       if(self.isData==1):
         MC=-1
       else:

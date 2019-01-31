@@ -4,13 +4,13 @@ import ROOT
 intLumi = 296.08 # pb^-1, uncertainty = 3.5 %
 
 #Channels: ee, mumu, emu
-channelString = "temp"
+channelString = "me"
 
 #Open file to read yield histograms
-f_input = ROOT.TFile("/gpfs/ddn/cms/user/jlangfor/top_quark_exercise/CMSSW_10_2_10/src/ttCMSDAS/ttbar/%s/TT.root"%channelString)
+f_input = ROOT.TFile("/home/users/lguzzi/LongEx/CMSSW_10_2_10/src/ttCMSDAS/ttbar/temp/nominal/TT.root")
 
 #Define systematic dictionary
-syst_dict = {"TT%s_muonID" %channelString:"Y%s_SFmuon"%channelString, "TT%s_electronID"%channelString:"Y%s_SFelec"%channelString, "TT%s_QCDscale"%channelString:"Y%s_MatrixEl"%channelString, "TT%s_pileup"%channelString:"Y%s_SFPU"%channelString}
+syst_dict = {"TT%s_pdf" %channelString:'Y%s_Pdf'%channelString, "TT%s_alpha" %channelString:'Y%s_Alphas'%channelString, "TT%s_muonID" %channelString:"Y%s_SFmuon"%channelString, "TT%s_electronID"%channelString:"Y%s_SFelec"%channelString, "TT%s_QCDscale"%channelString:"Y%s_MatrixEl"%channelString, "TT%s_pileup"%channelString:"Y%s_SFPU"%channelString}
 
 #Dictionary to hold central uncertainty
 syst_values = {"TT_lumi":0.035}
