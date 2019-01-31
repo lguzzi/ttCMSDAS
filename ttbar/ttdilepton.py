@@ -31,9 +31,11 @@ class ttdilepton(analysis):
     self.CreateTH1F("DeltaPhi", "", 20, 0, 1)
     
     self.CreateTH1F("Y_MatrixEl", "", 9, 0, 9) 
-    self.CreateTH1F("Y_SFmuon", "", 3,0,3)
+    self.CreateTH1F("Y_SFmuon", "", 3, 0, 3)
     self.CreateTH1F("Y_SFelec", "", 3, 0, 3)
     self.CreateTH1F('Y_SFPU'  , "", 3, 0, 3)
+    self.CreateTH1F("Y_Pdf", "", 31, 0, 31) 
+    self.CreateTH1F("Y_Alphas", "", 3, 0, 3) 
 
   def resetObjects(self):
     ''' Reset the list where the objects are stored '''
@@ -91,7 +93,13 @@ class ttdilepton(analysis):
     for ii in range(9):
         if ii == 6 or ii == 2: continue     ## skip the unphysical values (2-0.5 and 0.5, 2)
         self.obj['Y_MatrixEl'].Fill(ii + 0.5, self.weight * self.SFlhe[ii])
-
+    
+    for ii in range(31):
+        self.obj['Y_Pdf'].Fill(ii + 0.5, self.weight * self.LHEPdf[ii])
+    
+    for ii in range(3):
+        self.obj['Y_Alphas'].Fill(ii + 0.5, self.weight * self.LHEAlphas[ii])
+    
   def insideLoop(self, t):
     self.resetObjects()
 
@@ -173,7 +181,16 @@ class ttdilepton(analysis):
     #LHE weights
     if not self.isData:
         self.SFlhe = t.LHEScaleWeight
-    
+
+    self.LHEPdfAlphaWeight = [1]*33
+    self.LHEPdf = [1]*31
+    self.LHEAlphas = [1]*3
+    #LHE PDF and alpha weights
+    if not self.isData:
+       self.LHEPdfAlphaWeight = t.LHEPdfWeight
+       self.LHEPdf = [el for eli, el in enumerate(t.LHEPdfWeight) if eli < 31]
+       self.LHEAlphas = [self.LHEPdfAlphaWeight[0]] + [el for eli, el in enumerate(t.LHEPdfWeight) if eli >= 31]
+
     ### Event selection
     ###########################################
     
