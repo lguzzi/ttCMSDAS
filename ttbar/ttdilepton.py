@@ -33,6 +33,7 @@ class ttdilepton(analysis):
     self.CreateTH1F("Y_MatrixEl", "", 9, 0, 9) 
     self.CreateTH1F("Y_SFmuon", "", 3,0,3)
     self.CreateTH1F("Y_SFelec", "", 3, 0, 3)
+    self.CreateTH1F('Y_SFPU'  , "", 3, 0, 3)
 
   def resetObjects(self):
     ''' Reset the list where the objects are stored '''
@@ -53,6 +54,10 @@ class ttdilepton(analysis):
     # electrons Up and Down
     self.weightSFelecUp = self.EventWeight * self.SFmuon * (self.SFelec + self.SFelecErr) * self.PUSF
     self.weightSFelecDown = self.EventWeight * self.SFmuon * (self.SFelec - self.SFelecErr) * self.PUSF
+
+    ## PU Up and Down
+    self.weightSFPUUp   =  self.weight * self.PUUpSF / self.PUSF
+    self.weightSFPUDown =  self.weight * self.PUDoSF / self.PUSF
 
     # Re-calculate the observables
     lep0  = leptons[0]; lep1 = leptons[1]
@@ -78,6 +83,10 @@ class ttdilepton(analysis):
     self.obj['Y_SFelec'].Fill(0.5, self.weight)
     self.obj['Y_SFelec'].Fill(1.5, self.weightSFelecUp)
     self.obj['Y_SFelec'].Fill(2.5, self.weightSFelecDown)
+
+    self.obj['Y_SFPU'  ].Fill(0.5, self.weight        )
+    self.obj['Y_SFPU'  ].Fill(1.5, self.weightSFPUUp  )
+    self.obj['Y_SFPU'  ].Fill(2.5, self.weightSFPUDown)
 
     for ii in range(9):
         if ii == 6 or ii == 2: continue     ## skip the unphysical values (2-0.5 and 0.5, 2)
