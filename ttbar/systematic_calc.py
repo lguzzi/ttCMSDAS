@@ -12,12 +12,18 @@ f_input = ROOT.TFile("/gpfs/ddn/cms/user/jlangfor/top_quark_exercise/CMSSW_10_2_
 #Define systematic dictionary
 syst_dict = {"TT_muonID":"Y_SFmuon", "TT_electronID":"Y_SFelec", "TT_QCDscale":"Y_MatrixEl", "TT_pileup":"Y_SFPU"}
 
+#Dictionary to hold central uncertainty
+syst_values = {"TT_lumi":0.035}
+
+#For nicer output to group D
+syst_strings = {"TT_lumi":"1.035 0.965"}
+
 #Extract nominal events from first histogram
 h_initialize = f_input.Get( syst_dict["TT_muonID"] )
 n_nominal = h_initialize.GetBinContent(1)
 n_nominal_statUnc = h_initialize.GetBinError(1)
 
-print ""
+print "This is for channel: %s"%channelString
 print "N_signal = %5.4f +- %5.4f"%(n_nominal*intLumi,n_nominal_statUnc*intLumi)
 print "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"
 
@@ -51,9 +57,47 @@ for syst, hSyst_string in syst_dict.iteritems():
   yieldVar_down = n_down/n_nominal
   yieldVar_central = (0.5*abs(n_up-n_down))/n_nominal
 
+  #Add value to dictionary
+  syst_values['%s'%syst] = yieldVar_central
+  syst_strings['%s'%syst] = "%5.4f %5.4f"%(yieldVar_up,yieldVar_down)
+
   #Add information to string
   syst_string += "%5.4f/%5.4f (%4.2f%%/%4.2f%%) (central = %4.2f%%)"%(yieldVar_up,yieldVar_down,abs(yieldVar_up-1)*100,abs(yieldVar_down-1)*100,(yieldVar_central*100))
 
+  #Print the yielf variations for the systematic
   print syst_string
     
 print ""
+print "############################################################"
+print " NICE OUTPUT FOR THE GROUP D GUYS                           "
+print ""
+print " CHANNEL: %s"%channelString
+print ""
+print " Nominal Signal Yield = %5.4f +- %5.4f"%(n_nominal*intLumi,n_nominal_statUnc*intLumi)
+print ""
+print " SYSTEMATCS UNCERTAINTY YIELD VARIATIONS:"
+print ""
+for key, value in syst_strings.iteritems():
+  print "  * %s %s"%(key,value)
+print ""
+print "############################################################"
+print ""
+
+#Output information to file
+
+# INPUT FROM GROUP A!!!
+N_data = 5
+u_data = 1.2
+N_bkg = 3.5
+u_bkg = 0.9
+
+f_output = open( "systematics_%s.txt"%channelString, "w" )
+f_output.write( "channel %s\n"%channelString )
+f_output.write( "data %5.4f %5.4f\n"%(N_data,u_data)) ### UPDATE THIS WHEN NUMBERS ARE AVAILABLE
+f_output.write( "bkg %5.4f %5.4f\n"%(N_bkg,u_bkg)) ### UPDATE THIS WHEN NUMBERS ARE AVAILABLE
+f_output.write( "sig %5.4f %5.4f\n"%(n_nominal*intLumi,n_nominal_statUnc))
+f_output.write( "-----------------\n")
+for syst, unc in syst_values.iteritems():
+  f_output.write( "%s %5.4f\n"%(syst,unc) )
+f_output.write( "-----------------\n")
+f_output.close()
