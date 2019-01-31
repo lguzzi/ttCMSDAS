@@ -1,5 +1,7 @@
 import os,sys
 basepath = os.path.abspath(__file__).rsplit('/ttCMSDAS/',1)[0]+'/ttCMSDAS/'
+   
+   
 sys.path.append(basepath)
 
 from framework.analysis import analysis
@@ -29,13 +31,27 @@ class ttdilepton(analysis):
     self.CreateTH1F("InvMass",  "", 60, 0, 300)
     self.CreateTH1F("DilepPt",  "", 40, 0, 200)
     self.CreateTH1F("DeltaPhi", "", 20, 0, 1)
-    
-    self.CreateTH1F("Y_MatrixEl", "", 9, 0, 9) 
-    self.CreateTH1F("Y_SFmuon", "", 3, 0, 3)
-    self.CreateTH1F("Y_SFelec", "", 3, 0, 3)
-    self.CreateTH1F('Y_SFPU'  , "", 3, 0, 3)
-    self.CreateTH1F("Y_Pdf", "", 31, 0, 31) 
-    self.CreateTH1F("Y_Alphas", "", 3, 0, 3) 
+  
+    self.CreateTH1F("Yee_MatrixEl", "", 9, 0, 9) 
+    self.CreateTH1F("Yee_SFmuon", "", 3, 0, 3)
+    self.CreateTH1F("Yee_SFelec", "", 3, 0, 3)
+    self.CreateTH1F('Yee_SFPU'  , "", 3, 0, 3)
+    self.CreateTH1F("Yee_Pdf", "", 31, 0, 31) 
+    self.CreateTH1F("Yee_Alphas", "", 3, 0, 3) 
+ 
+    self.CreateTH1F("Ymm_MatrixEl", "", 9, 0, 9) 
+    self.CreateTH1F("Ymm_SFmuon", "", 3, 0, 3)
+    self.CreateTH1F("Ymm_SFelec", "", 3, 0, 3)
+    self.CreateTH1F('Ymm_SFPU'  , "", 3, 0, 3)
+    self.CreateTH1F("Ymm_Pdf", "", 31, 0, 31) 
+    self.CreateTH1F("Ymm_Alphas", "", 3, 0, 3) 
+  
+    self.CreateTH1F("Yme_MatrixEl", "", 9, 0, 9) 
+    self.CreateTH1F("Yme_SFmuon", "", 3, 0, 3)
+    self.CreateTH1F("Yme_SFelec", "", 3, 0, 3)
+    self.CreateTH1F('Yme_SFPU'  , "", 3, 0, 3)
+    self.CreateTH1F("Yme_Pdf", "", 31, 0, 31) 
+    self.CreateTH1F("Yme_Alphas", "", 3, 0, 3) 
 
   def resetObjects(self):
     ''' Reset the list where the objects are stored '''
@@ -43,7 +59,7 @@ class ttdilepton(analysis):
     self.selJets = []
     self.pmet = TLorentzVector()
 
-  def FillHistograms(self, leptons, jets, pmet):
+  def FillHistograms(self, leptons, jets, pmet, flavour):
     ''' Fill all the histograms. Take the inputs from lepton list, jet list, pmet '''
     if not len(leptons) >= 2: return # Just in case
     # nominal
@@ -78,27 +94,31 @@ class ttdilepton(analysis):
     self.obj['DilepPt'].Fill(dipt, self.weight)
     self.obj['DeltaPhi'].Fill(dphi/3.141592, self.weight)
     
-    self.obj['Y_SFmuon'].Fill(0.5, self.weight)
-    self.obj['Y_SFmuon'].Fill(1.5, self.weightSFmuonUp)
-    self.obj['Y_SFmuon'].Fill(2.5, self.weightSFmuonDown)
-    
-    self.obj['Y_SFelec'].Fill(0.5, self.weight)
-    self.obj['Y_SFelec'].Fill(1.5, self.weightSFelecUp)
-    self.obj['Y_SFelec'].Fill(2.5, self.weightSFelecDown)
+    if flavour == 0: flav = 'mm'
+    if flavour == 1: flav = 'ee'
+    if flavour == 2: flav = 'me'
 
-    self.obj['Y_SFPU'  ].Fill(0.5, self.weight        )
-    self.obj['Y_SFPU'  ].Fill(1.5, self.weightSFPUUp  )
-    self.obj['Y_SFPU'  ].Fill(2.5, self.weightSFPUDown)
+    self.obj['Y%s_SFmuon' %flav].Fill(0.5, self.weight)
+    self.obj['Y%s_SFmuon' %flav].Fill(1.5, self.weightSFmuonUp)
+    self.obj['Y%s_SFmuon' %flav].Fill(2.5, self.weightSFmuonDown)
+    
+    self.obj['Y%s_SFelec' %flav].Fill(0.5, self.weight)
+    self.obj['Y%s_SFelec' %flav].Fill(1.5, self.weightSFelecUp)
+    self.obj['Y%s_SFelec' %flav].Fill(2.5, self.weightSFelecDown)
+
+    self.obj['Y%s_SFPU' %flav ].Fill(0.5, self.weight        )
+    self.obj['Y%s_SFPU' %flav ].Fill(1.5, self.weightSFPUUp  )
+    self.obj['Y%s_SFPU' %flav ].Fill(2.5, self.weightSFPUDown)
 
     for ii in range(9):
         if ii == 6 or ii == 2: continue     ## skip the unphysical values (2-0.5 and 0.5, 2)
-        self.obj['Y_MatrixEl'].Fill(ii + 0.5, self.weight * self.SFlhe[ii])
+        self.obj['Y%s_MatrixEl' %flav].Fill(ii + 0.5, self.weight * self.SFlhe[ii])
     
     for ii in range(31):
-        self.obj['Y_Pdf'].Fill(ii + 0.5, self.weight * self.LHEPdf[ii])
+        self.obj['Y%s_Pdf' %flav].Fill(ii + 0.5, self.weight * self.LHEPdf[ii])
     
     for ii in range(3):
-        self.obj['Y_Alphas'].Fill(ii + 0.5, self.weight * self.LHEAlphas[ii])
+        self.obj['Y%s_Alphas' %flav].Fill(ii + 0.5, self.weight * self.LHEAlphas[ii])
     
   def insideLoop(self, t):
     self.resetObjects()
@@ -229,6 +249,7 @@ class ttdilepton(analysis):
     ## HLT selection
     ##      simple HLT selection for doubleLep samples
     if    l0.IsMuon() and l1.IsMuon():
+        flavour = 0
         ## DY offline cut
         if abs(inv_mass - Z_MASS_PDG) < 15:
             return
@@ -240,6 +261,7 @@ class ttdilepton(analysis):
             return
     
     elif  l0.IsElec() and l1.IsElec():
+        flavour = 1
         ## DY offline cut
         if abs(inv_mass - Z_MASS_PDG) < 15:
              return
@@ -253,7 +275,8 @@ class ttdilepton(analysis):
     ##      depends on the sample for emu samples
     elif (l0.IsMuon() and l1.IsElec()) or \
          (l0.IsElec() and l1.IsMuon()) :
-
+        
+        flavour = 2
         ## online only
         if self.sampleName == 'HighEGJet':
             if not (t.HLT_HIEle20_WPLoose_Gsf and not t.HLT_HIL3Mu20):
@@ -267,4 +290,4 @@ class ttdilepton(analysis):
         import pdb; pdb.set_trace()
 
     ### Fill the histograms
-    self.FillHistograms(self.selLeptons, self.selJets, self.pmet)
+    self.FillHistograms(self.selLeptons, self.selJets, self.pmet, flavour)

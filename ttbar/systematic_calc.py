@@ -10,7 +10,7 @@ channelString = "temp"
 f_input = ROOT.TFile("/gpfs/ddn/cms/user/jlangfor/top_quark_exercise/CMSSW_10_2_10/src/ttCMSDAS/ttbar/%s/TT.root"%channelString)
 
 #Define systematic dictionary
-syst_dict = {"TT_muonID":"Y_SFmuon", "TT_electronID":"Y_SFelec", "TT_QCDscale":"Y_MatrixEl", "TT_pileup":"Y_SFPU"}
+syst_dict = {"TT%s_muonID" %channelString:"Y%s_SFmuon"%channelString, "TT%s_electronID"%channelString:"Y%s_SFelec"%channelString, "TT%s_QCDscale"%channelString:"Y%s_MatrixEl"%channelString, "TT%s_pileup"%channelString:"Y%s_SFPU"%channelString}
 
 #Dictionary to hold central uncertainty
 syst_values = {"TT_lumi":0.035}
@@ -19,7 +19,7 @@ syst_values = {"TT_lumi":0.035}
 syst_strings = {"TT_lumi":"1.035 0.965"}
 
 #Extract nominal events from first histogram
-h_initialize = f_input.Get( syst_dict["TT_muonID"] )
+h_initialize = f_input.Get( syst_dict["TT%s_muonID"%channelString] )
 n_nominal = h_initialize.GetBinContent(1)
 n_nominal_statUnc = h_initialize.GetBinError(1)
 
