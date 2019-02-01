@@ -21,6 +21,12 @@ class ttdilepton(analysis):
     # Objects for the analysis
     self.selLeptons = []
     self.selJets = []
+    
+    self.selJets_jes_up = []
+    self.selJets_jes_do = []
+    self.selJets_jer_up = []
+    self.selJets_jer_do = []
+   
     self.pmet = TLorentzVector()
 
     # Create output histograms
@@ -55,17 +61,40 @@ class ttdilepton(analysis):
     self.CreateTH1F("Yme_SFelec", "", 3, 0, 3)
     self.CreateTH1F('Yme_SFPU'  , "", 3, 0, 3)
     self.CreateTH1F("Yme_Pdf", "", 31, 0, 31) 
-    self.CreateTH1F("Yme_Alphas", "", 3, 0, 3) 
+    self.CreateTH1F("Yme_Alphas", "", 3, 0, 3)
+    
+    self.CreateTH1F("Yme_jetS", "", 3, 0, 3)
+    self.CreateTH1F("Yee_jetS", "", 3, 0, 3)
+    self.CreateTH1F("Ymm_jetS", "", 3, 0, 3)
+    
+    
+    self.CreateTH1F("Yee_jetR", "", 3, 0, 3)
+    self.CreateTH1F("Ymm_jetR", "", 3, 0, 3)
+    self.CreateTH1F("Yme_jetR", "", 3, 0, 3)
+    
+    
+  
 
   def resetObjects(self):
     ''' Reset the list where the objects are stored '''
     self.selLeptons = []
     self.selJets = []
+    self.selJets_jes_do = []
+    self.selJets_jes_up = []
+    self.selJets_jer_up = []
+    self.selJets_jer_do = []
     self.pmet = TLorentzVector()
 
   def FillHistograms(self, leptons, jets, pmet, flavour):
     ''' Fill all the histograms. Take the inputs from lepton list, jet list, pmet '''
+    
+    if flavour == 0: flav = 'mm'
+    if flavour == 1: flav = 'ee'
+    if flavour == 2: flav = 'me'
+
+
     if not len(leptons) >= 2: return # Just in case
+
     # nominal
     self.weight = self.EventWeight * self.SFmuon * self.SFelec * self.PUSF
     
@@ -89,6 +118,19 @@ class ttdilepton(analysis):
     mll   = InvMass(lep0, lep1)
     dipt  = DiPt(lep0, lep1)
     
+    ## JES and JER on top of everything
+    if len(self.selJets       ) >= 2: self.obj["Y%s_jetS" %flav].Fill(0.5, self.weight)
+    if len(self.selJets       ) >= 2: self.obj["Y%s_jetR" %flav].Fill(0.5, self.weight)
+
+    if len(self.selJets_jes_up) >= 2: self.obj["Y%s_jetS" %flav].Fill(1.5, self.weight)
+    if len(self.selJets_jes_do) >= 2: self.obj["Y%s_jetS" %flav].Fill(2.5, self.weight)
+    
+    if len(self.selJets_jer_up) >= 2: self.obj["Y%s_jetR" %flav].Fill(1.5, self.weight)
+    if len(self.selJets_jer_do) >= 2: self.obj["Y%s_jetR" %flav].Fill(2.5, self.weight)
+    
+    ## From now on selections should be the nominal ones, and only ket number was missing
+    ## NOTE should we use jet id?
+    if len(self.selJets) < 2: return
     ### Fill the histograms
     self.obj['Lep0Pt'].Fill(l0pt, self.weight)
     self.obj['Lep1Pt'].Fill(l1pt, self.weight)
@@ -98,10 +140,6 @@ class ttdilepton(analysis):
     self.obj['DilepPt'].Fill(dipt, self.weight)
     self.obj['DeltaPhi'].Fill(dphi/3.141592, self.weight)
     
-    if flavour == 0: flav = 'mm'
-    if flavour == 1: flav = 'ee'
-    if flavour == 2: flav = 'me'
-
     self.obj['Y%s_SFmuon' %flav].Fill(0.5, self.weight)
     self.obj['Y%s_SFmuon' %flav].Fill(1.5, self.weightSFmuonUp)
     self.obj['Y%s_SFmuon' %flav].Fill(2.5, self.weightSFmuonDown)
@@ -114,8 +152,8 @@ class ttdilepton(analysis):
     self.obj['Y%s_SFPU' %flav ].Fill(1.5, self.weightSFPUUp  )
     self.obj['Y%s_SFPU' %flav ].Fill(2.5, self.weightSFPUDown)
 
-    self.obj['Y%s_yield' %flav].Fill(0.5, self.weight)
-
+    #self.obj['Y%s_yield' %flav].Fill(0.5, self.weight)
+ 
     for ii in range(9):
         if ii == 6 or ii == 2: continue     ## skip the unphysical values (2-0.5 and 0.5, 2)
         self.obj['Y%s_MatrixEl' %flav].Fill(ii + 0.5, self.weight * self.SFlhe[ii])
@@ -183,15 +221,35 @@ class ttdilepton(analysis):
     MC=1
     for i in range(t.nJet):
       p = TLorentzVector()
+      jes_pup = TLorentzVector()
+      jes_pdo = TLorentzVector()
+      jer_pup = TLorentzVector()
+      jer_pdo = TLorentzVector()
+      #p.SetPtEtaPhiM(t.Jet_pt[i], t.Jet_eta[i], t.Jet_phi[i], t.Jet_mass[i])
       p.SetPtEtaPhiM(t.Jet_pt[i], t.Jet_eta[i], t.Jet_phi[i], t.Jet_mass[i])
+     
+      jes_pup.SetPtEtaPhiM(t.Jet_pt_jesTotalUp[i], t.Jet_eta[i], t.Jet_phi[i], t.Jet_mass_jesTotalUp[i])
+      jes_pdo.SetPtEtaPhiM(t.Jet_pt_jesTotalDown[i], t.Jet_eta[i], t.Jet_phi[i], t.Jet_mass_jesTotalDown[i])
+      
+      jer_pup.SetPtEtaPhiM(t.Jet_pt_jerUp[i], t.Jet_eta[i], t.Jet_phi[i], t.Jet_mass_jerUp[i])
+      jer_pdo.SetPtEtaPhiM(t.Jet_pt_jerDown[i], t.Jet_eta[i], t.Jet_phi[i], t.Jet_mass_jerDown[i])
+      
       if(self.isData==1):
         MC=-1
       else:
         MC=1
-      if t.Jet_jetId[i] < 2: continue #continue if it is not tight 
-      self.selJets.append(jet(p, t.Jet_btagCSVV2[i],MC,i,t.Jet_btagDeepB[i]))
+      if t.Jet_jetId[i] < 2: 
+        continue #continue if it is not tight 
+      if abs(p.Eta()) > 2.4: continue 
+      if p.Pt() > 25             :       self.selJets.append(jet(p, t.Jet_btagCSVV2[i],MC,i,t.Jet_btagDeepB[i]))
+      
+      if jes_pup.Pt() > 25       :       self.selJets_jes_up.append(jet(jes_pup, t.Jet_btagCSVV2[i],MC,i,t.Jet_btagDeepB[i]))
+      if jes_pdo.Pt() > 25       :       self.selJets_jes_do.append(jet(jes_pdo, t.Jet_btagCSVV2[i],MC,i,t.Jet_btagDeepB[i]))
 
-    ###P Met
+      if jer_pup.Pt() > 25       :       self.selJets_jer_up.append(jet(jer_pup, t.Jet_btagCSVV2[i],MC,i,t.Jet_btagDeepB[i]))
+      if jer_pdo.Pt() > 25       :       self.selJets_jer_do.append(jet(jer_pdo, t.Jet_btagCSVV2[i],MC,i,t.Jet_btagDeepB[i]))
+   
+     ###P Met
     self.pmet.SetPtEtaPhiM(t.MET_pt, 0, t.MET_phi, 0)
     
     ### Calculate the weights
@@ -245,9 +303,8 @@ class ttdilepton(analysis):
     if l0.Pt() < 20:            return 
     if InvMass(l0,l1) < 20:     return  
     
-    if len(self.selJets) < 2: return
     ##if t.nJet < 2             :   return
-    ##if t.jet_jetId & 011 == 1 :   return     
+    ##if t.jet_jetId & 011 == 1 :   return  ## should be 0?   
 
     Z_MASS_PDG = 91.1876
     inv_mass = InvMass(l0, l1)
@@ -294,6 +351,6 @@ class ttdilepton(analysis):
     else:
         print 'ERROR: 0 muons and 0 electrons were found'
         import pdb; pdb.set_trace()
-
+ 
     ### Fill the histograms
     self.FillHistograms(self.selLeptons, self.selJets, self.pmet, flavour)
