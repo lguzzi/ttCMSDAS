@@ -4,13 +4,20 @@ import ROOT
 intLumi = 296.08 # pb^-1, uncertainty = 3.5 %
 
 #Channels: ee, mumu, emu
-channelString = "me"
+channelString = "temp"
 
 #Open file to read yield histograms
-f_input = ROOT.TFile("/home/users/lguzzi/LongEx/CMSSW_10_2_10/src/ttCMSDAS/ttbar/temp/nominal/TT.root")
+f_input = ROOT.TFile("/gpfs/ddn/cms/user/jlangfor/top_quark_exercise/CMSSW_10_2_10/src/ttCMSDAS/ttbar/%s/TT.root"%channelString)
 
 #Define systematic dictionary
-syst_dict = {"TT%s_Pdf" %channelString:"Y%s_Pdf"%channelString, "TT%s_Alphas" %channelString:"Y%s_Alphas"%channelString, "TT%s_muonID" %channelString:"Y%s_SFmuon"%channelString, "TT%s_electronID"%channelString:"Y%s_SFelec"%channelString, "TT%s_QCDscale"%channelString:"Y%s_MatrixEl"%channelString, "TT%s_pileup"%channelString:"Y%s_SFPU"%channelString}
+syst_dict = {"TT%s_muonID" %channelString:"Y%s_SFmuon"%channelString, "TT%s_electronID"%channelString:"Y%s_SFelec"%channelString, "TT%s_QCDscale"%channelString:"Y%s_MatrixEl"%channelString, "TT%s_pileup"%channelString:"Y%s_SFPU"%channelString, "TT%s_Pdf"%channelString:"Y%s_Pdf"%channelString, "TT%s_Alphas"%channelString:"Y%s_Alphas"%channelString}
+
+#SFmuon 
+#Pdf 
+#SFPU
+#Alphas
+#MatrixEl
+#SFelec
 
 #Dictionary to hold central uncertainty
 syst_values = {"TT_lumi":0.035}
@@ -37,29 +44,25 @@ for syst, hSyst_string in syst_dict.iteritems():
   h_syst = f_input.Get("%s"%hSyst_string)
 
   #For "specific" systematics: treat differently
-  if( syst == "TT_QCDscale" ):
+  if( syst == "TT%s_QCDscale"%channelString ):
     #Loop over bins and extract n_up as maximum and n_down as minimum (not equal to zero)
     #Initialise n_up and n_down to nominal
-    n_up   = h_initialize.GetBinContent(5)
+    n_up = h_initialize.GetBinContent(5)
     n_down = h_initialize.GetBinContent(5)
-    # n_up = n_nominal
-    # n_down = n_nominal
+    for bin_idx in range(1,h_syst.GetNbinsX()+1):
+      if h_syst.GetBinContent(bin_idx)>n_up: n_up = h_syst.GetBinContent(bin_idx)
+      if h_syst.GetBinContent(bin_idx)<n_down and h_syst.GetBinContent(bin_idx)!= 0: n_down = h_syst.GetBinContent(bin_idx)
+
+  elif( syst == "TT%s_Pdf"%channelString ):
+    #Loop over bins and extract n_up as maximum and n_down as minimum (not equal to zero)
+    #Initialise n_up and n_down to nominal
+    n_up = n_nominal
+    n_down = n_nominal
     for bin_idx in range(1,h_syst.GetNbinsX()+1):
       if h_syst.GetBinContent(bin_idx)>n_up: n_up = h_syst.GetBinContent(bin_idx)
       if h_syst.GetBinContent(bin_idx)<n_down and h_syst.GetBinContent(bin_idx)!= 0: n_down = h_syst.GetBinContent(bin_idx)
       
-  elif( syst == "TT_Pdf" ):
-    #Loop over bins and extract n_up as maximum and n_down as minimum (not equal to zero)
-    #Initialise n_up and n_down to nominal
-    n_up   = h_initialize.GetBinContent(1)
-    n_down = h_initialize.GetBinContent(1)
-    # n_up = n_nominal
-    # n_down = n_nominal
-    for bin_idx in range(1,h_syst.GetNbinsX()+1):
-      if h_syst.GetBinContent(bin_idx)>n_up: n_up = h_syst.GetBinContent(bin_idx)
-      if h_syst.GetBinContent(bin_idx)<n_down and h_syst.GetBinContent(bin_idx)!= 0: n_down = h_syst.GetBinContent(bin_idx)
-  
-    #For statdard (up/down) systematics
+  #For statdard (up/down) systematics
   else:
     #Get number of events with up and down variation
     n_up = h_syst.GetBinContent(2)
@@ -114,3 +117,4 @@ for syst, unc in syst_values.iteritems():
   f_output.write( "%s %5.4f\n"%(syst,unc) )
 f_output.write( "-----------------\n")
 f_output.close()
+

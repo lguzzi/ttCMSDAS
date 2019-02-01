@@ -13,7 +13,8 @@ def mu_unc_calc( N_data, u_data, N_bkg, u_bkg, N_sig, u_sig_list ): #
   for unc in u_sig_list: u_sig_combined+=unc*unc
   u_sig_combined = u_sig_combined**0.5
 
-  u_mu = mu_calc(N_data,N_bkg,N_sig)*(((u_data**2+u_bkg**2)/(N_data-N_bkg)**2)+(u_sig_combined)**2)**0.5
+  #u_mu = mu_calc(N_data,N_bkg,N_sig)*(((u_data**2+u_bkg**2)/(N_data-N_bkg)**2)+(u_sig_combined)**2)**0.5
+  u_mu =(u_data**2 + u_bkg**2 + ((1/N_sig)**2)*u_sig_combined)**0.5
   return u_mu
   
 # Function to read input file from systematics_calc
@@ -59,6 +60,4 @@ def readSystematics( channel="temp" ):
   print "  * mu = %5.4f +- %5.4f"%(mu,u_mu) 
 
 readSystematics( channel="temp" )
-
-    
 
