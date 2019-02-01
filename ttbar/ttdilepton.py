@@ -131,7 +131,6 @@ class ttdilepton(analysis):
     ## From now on selections should be the nominal ones, and only ket number was missing
     ## NOTE should we use jet id?
     if len(self.selJets) < 2: return
-    import pdb ; pdb.set_trace() 
     ### Fill the histograms
     self.obj['Lep0Pt'].Fill(l0pt, self.weight)
     self.obj['Lep1Pt'].Fill(l1pt, self.weight)
