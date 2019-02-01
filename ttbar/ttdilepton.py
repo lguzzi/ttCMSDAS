@@ -79,6 +79,10 @@ class ttdilepton(analysis):
     ''' Reset the list where the objects are stored '''
     self.selLeptons = []
     self.selJets = []
+    self.selJets_jes_do = []
+    self.selJets_jes_up = []
+    self.selJets_jer_up = []
+    self.selJets_jer_do = []
     self.pmet = TLorentzVector()
 
   def FillHistograms(self, leptons, jets, pmet, flavour):
@@ -127,7 +131,7 @@ class ttdilepton(analysis):
     ## From now on selections should be the nominal ones, and only ket number was missing
     ## NOTE should we use jet id?
     if len(self.selJets) < 2: return
-    
+    import pdb ; pdb.set_trace() 
     ### Fill the histograms
     self.obj['Lep0Pt'].Fill(l0pt, self.weight)
     self.obj['Lep1Pt'].Fill(l1pt, self.weight)
